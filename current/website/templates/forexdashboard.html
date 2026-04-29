@@ -1,0 +1,76 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<br>
+<br>
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <i class="fas fa-chart-line"></i> Forex-Trading</a>
+        <div class="navbar-nav ms-auto">
+
+              <br>
+              <a class="nav-link" href="{{ url_for('forexmain.index') }}">Forex-Home</a>
+              <a class="nav-link" href="{{ url_for('forexmain.trade') }}">Trade</a>
+              <a class="nav-link" href="{{ url_for('forexmain.logout') }}">Logout</a>
+
+            </div>
+
+    </div>
+ </nav>
+<br>
+
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Account Balance</h5>
+                <h3>${{ "%.2f" |format(balance) }}</h3>
+            </div>
+        </div>
+    </div>
+ <br>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Portfolio Holdings</h5>
+            </div>
+            <div class="card-body">
+
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                            <th>Base Currency</th>
+                            <th>Target Currency</th>
+                            <th>Amount</th>
+                            <th>Rate</th>
+                            <th>Timestamp</th>
+                        </tr>
+                      </thead>
+                        <tbody id="trade">
+                         {% for trade in trades %}
+                            <tr>
+                                <td>{{ trade[0].upper() }}</td>
+                                <td>{{ trade[1].upper() }}</td>
+                                <td>{{ trade[2] }}</td>
+                                <td>{{ trade[3] }}</td>
+                                <td>{{ trade[4] }}</td>
+                            </tr>
+                         {% endfor %}
+                        </tbody>
+
+                    </table>
+                  </div>
+                   <p class="text-muted">No holdings yet.<a href="{{ url_for('forexmain.trade')}}">Start trading</a>to build your portfolio</p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

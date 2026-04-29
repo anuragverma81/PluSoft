@@ -1,0 +1,28 @@
+{% extends 'base.html' %}{%block title%} home{%endblock%}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card">
+    <div class="alert alert-info">
+        <div class="card title">
+            <h4 class="mb-3 text-center" >Welcome to PluSoft Trading Platform</h4>
+
+        </div>
+
+
+   <h5 class="mb-3">What you want to do?</h5>
+    <a href="{{ url_for('stockmain.stock_home') }}" class="btn btn-primary">Stock Trading</a>
+    <a href="{{ url_for('forexmain.index') }}" class="btn btn-primary">Forex Trading</a>
+     <a href="{{ url_for('cryptomain.index') }}" class="btn btn-primary">Crypto Trading</a>
+
+        </div>
+
+        </div>
+
+
+
+
+
+</div>
+
+{% endblock %}

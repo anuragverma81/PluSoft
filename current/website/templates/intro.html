@@ -1,0 +1,56 @@
+{% extends 'base.html' %}{%block title%} home{%endblock%}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+
+
+
+    <h2 class="mb-4 text-center text-primary">CryptoCurrency Price Prediction</h2>
+
+
+    {% if error %}
+           <div class="alert alert-danger alert-dismissable fade show" role="alert">
+    {{error}}
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+        </div>
+
+
+
+    {% endif %}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="coin">Coin Name</label>
+            <input type="text" class="form-control" id="coin" name="coin" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vs_currency">Currency</label>
+            <input type="text" class="form-control" id="vs_currency" name="vs_currency" required>
+        </div>
+
+        <div class="form-group">
+            <label for="start_date">Start Date(For fetching data)</label>
+            <input type="text" class="form-control" id="start_date" name="start_date" placeholder="YYYY-MM-DD" required>
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End date(For fetching data)</label>
+            <input type="text" class="form-control" id="end_date" name="end_date" placeholder="YYYY-MM-DD" required>
+        </div>
+
+        <button type="submit" class="btn btn-secondary">Predict</button>
+        <a href="/" class="btn btn-secondary">Back</a>
+
+    </form>
+
+
+        </div>
+
+</div>
+
+{% endblock %}

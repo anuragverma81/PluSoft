@@ -1,0 +1,211 @@
+{% extends 'base.html' %}{% block title %}Home{% endblock %}
+{% block content %}
+
+
+<br>
+<br>
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <i class="fas fa-chart-line"></i> Stock Trading</a>
+        <div class="navbar-nav ms-auto">
+
+              <br>
+              <a class="nav-link" href="{{ url_for('stockmain.dashboard') }}">Dashboard</a>
+              <a class="nav-link" href="{{ url_for('stockmain.trade') }}">Trade</a>
+              <a class="nav-link" href="{{ url_for('stockmain.watchlist') }}">Watchlist</a>
+              <a class="nav-link" href="{{ url_for('stockmain.logout') }}">Logout</a>
+
+            </div>
+
+    </div>
+ </nav>
+<br>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Place Order</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="tradeForm">
+                    <div class="mb-3">
+                        <label for="symbol" class="form-label">Symbol</label>
+                        <input type="text" class="form-control" id="symbol" name="symbol" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country of Company</label>
+                        <input type="text" class="form-control" id="country" name="country" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="action" class="form-label">Action</label>
+                        <select class="form-control" id="action" name="action" required>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="shares" class="form-label"> Number of Shares</label>
+                        <input type="text" class="form-control" id="shares" name="shares" required>
+                    </div>
+                    <div class="mb-3">
+                        <div id="stockInfo" class="alert alert-info" style="display:none;">
+                            <strong id="stockName"></strong><br>
+                            Current Price: $<span id="currentPrice">0.00</span><br>
+                            Change:<span id="priceChange">$0.00(0.00%)</span><br>
+                            Estimated Total:<span id="estimatedTotal">0.00</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Place Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Market Overview</h5>
+            </div>
+            <div class="card-body">
+                <div id ="marketData">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card stock-card" onclick="selectStock('AAPL)">
+                                <div class="card-body text-center">
+                                    <h6>APPL</h6>
+                                    <div class="stock-price" data-symbol="AAPL">$0.00</div>
+                                    <small class="stock-change" data-symbol="AAPL">$0.00(0.00%)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card stock-card" onclick="selectStock('TCS.NS')">
+                                <div class="card-body text-center">
+                                    <h6>TCS</h6>
+                                    <div class="stock-price" data-symbol="TCS.NS">$0.00</div>
+                                    <small class="stock-change" data-symbol="TCS.NS">$0.00(0.00%)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card stock-card" onclick="selectStock('ETERNAL.NS')">
+                                <div class="card-body text-center">
+                                    <h6>ETERNAL</h6>
+                                    <div class="stock-price" data-symbol="ETERNAL.NS">$0.00</div>
+                                    <small class="stock-change" data-symbol="ETERNAL.NS">$0.00(0.00%)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 mb-3">
+                            <div class="card stock-card" onclick="selectStock('MSFT')">
+                                <div class="card-body text-center">
+                                    <h6>MSFT</h6>
+                                    <div class="stock-price" data-symbol="MSFT">$0.00</div>
+                                    <small class="stock-change" data-symbol="MSFT">$0.00(0.00%)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    let currentStockData=null;
+
+    function selectStock(symbol){
+         document.getElementById('symbol').value=symbol;
+         updateStockInfo();
+    }
+
+    function updateStockInfo(){
+         const symbol=document.getElementById('symbol').value.toUpperCase();
+         if(!symbol) return;
+         fetch('/api/stock/${symbol}')
+            .then(response=> response.json())
+            .then(data=>{
+                if(data.error){
+                   document.getElementById('stockInfo').style.display='none';
+                   return;
+                }
+
+                currentStockData=data;
+                document.getElementById('stockName').textContent=data.name || symbol;
+                document.getElementById('currentPrice').textContent=data.price.toFixed(2);
+
+                const changeElement=document.getElementById('priceChange');
+                const changeText= `${data.change.toFixed(2)}(${data.change_percent.toFixed(2)}%)`;
+                changeElement.textContent=changeText;
+                changeElement.className=data.change>=0?'positive':'negative';
+
+                document.getElementById('stockInfo').style.display='block';
+                updateEstimatedTotal();
+
+            })
+            .catch(error=>{
+                     console.error('Error fetching stock data:',error);
+                     document.getElementById('stockInfo).style.display='none';
+
+            });
+
+    }
+
+    function updateEstimatedTotal(){
+          if(!currentStockData) return;
+
+          const shares=parseInt(document.getElementById('shares').value) || 0;
+          const total=shares*currentStockData.price;
+          document.gatElementById('estimatedTotal').textContent=total.toFixed(2);
+
+    }
+
+    function updateMarketData(){
+
+         const symbol=['AAPL','TCS','ETERNAL','MSFT'];
+
+         symbols.forEach(symbol => {
+            fetch(`/api/stock/${symbol}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(!data.error){
+                      const priceElement=document.querySelector(`[data-symbol="${symbol}"].stock-price`);
+                      const changeElement=document.querySelector(`[data-symbol="${symbol}"].stock-change`);
+
+                      if(priceElement){
+                          priceElement.textContent= `${data.price.toFixed(2)}`;
+                      }
+
+                      if(changeElement){
+                         const changeText=`${data.change.toFixed(2)} (${data.change_percent.toFixed(2)})`;
+                         changeElement.textContent=changeText;
+                         changeElement.className=`stock-change ${data.change>=0 ? 'positive':'negative'}`;
+                      }
+                    }
+                })
+                .catch(error => console.error(`Error fetching ${symbol}:`,error));
+         });
+
+    }
+
+
+
+
+    document.getElementById('symbol').addEventListener('input','updateStockInfo');
+    document.getElementById('shares').addEventListener('input','updateEstimatedTotal');
+
+    updateMarketdata();
+    setInterval(updateMarketdata,30000);
+
+
+</script>
+{% endblock %}

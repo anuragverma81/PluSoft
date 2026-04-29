@@ -1,0 +1,46 @@
+{%extends "base.html"%}{%block title%}Agent Result {%endblock%}
+{%block content%}
+
+
+<div class="container mt-5">
+  <h1>Research Result</h1>
+
+  <div class="card">
+    <div class="card title">
+      <div class="alert alert-info">
+        <p>Your Search Result</p>
+        <div class="container mt-5">
+          {{ result }}
+      </div>
+    </div>
+  </div>
+
+
+  {% if response.error %}
+  <div class="alert alert-danger">
+
+    <strong>Error:</strong>{{ result.error }}<br>
+    <small>{{ result.details }}</small>
+  </div>
+  {%else%}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ result.topic }}</h5>
+
+        <br>
+      <p class="card-body">{{ result.summary }}</p>
+
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+<a href="/agent" class="btn btn-secondary mt-3">Back</a>
+
+
+
+
+
+
+
+{%endblock%}

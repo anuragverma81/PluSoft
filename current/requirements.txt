@@ -1,0 +1,13 @@
+Flask
+flask_login
+numpy
+pandas
+yfinance
+scikit-learn
+tensorflow
+flask_socketio
+pycoingecko
+forex-python
+pydantic
+eventlet
+gevent

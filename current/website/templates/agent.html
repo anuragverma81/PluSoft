@@ -1,0 +1,25 @@
+{%extends "base.html"%}{%block title%}Agent{%endblock%}
+{%block content%}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="alert alert-info">
+            <div class="card title">
+    <h1 class="mb-3 text-center">Research Assistant</h1>
+                </div>
+    <form method="POST">
+
+        <div class="form-group">
+            <label for="query">What can I do?</label>
+            <input type="text" class="form-control" id="query" name="query" required>
+        </div>
+
+        <button type="submit" class="btn btn-secondary">Research</button>
+
+        <a href="/agent" class="btn btn-secondary">Clear Search</a>
+    </form>
+            </div>
+        </div>
+</div>
+
+{%endblock%}

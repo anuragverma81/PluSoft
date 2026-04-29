@@ -1,0 +1,119 @@
+{%extends "base.html "%}{%block title%}Community{%endblock%}
+{%block content%}
+
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white text-center">
+      <h3>Community</h3>
+    </div>
+    <div id="chat" class="border rounded p-3 mb-3" style="height:300px;overflow-y:auto;">
+
+    </div>
+    <form id="chatForm">
+      <div class="mb-3">
+        <input type="text" id="username" class="form-control" placeholder="name" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" id="text" class="form-control" placeholder="type your message...." required>
+      </div>
+      <div class="mb-3">
+        <input type="file" id="imageInput" accept="image/*">
+      </div>
+      <div class="form-group">
+
+        <input type="text" class="form-control" id="captionInput" placeholder="caption...">
+
+      </div>
+
+      <button type="button" id="sendImageButton" class="btn btn-primary">Send Image</button>
+
+
+      <button type="submit" class="btn btn-primary">Post</button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  var socket=io();
+  const chatForm=document.getElementById('chatForm');
+  const chat=document.getElementById('chat');
+
+  chatForm.addEventListener('submit',function(e){
+      e.preventDefault();
+      let username=document.getElementById('username').value.trim();
+      let message=document.getElementById('text').value.trim();
+      let caption=document.getElementById('captionInput').value.trim();
+
+      if(username!=='' && message !==''){
+         const data={'username':username,'message':message};
+         socket.emit('send_message',data);
+         document.getElementById('text').value='';
+
+
+      }
+
+  });
+
+  socket.on('receive_message',function(data){
+     let messageElement = document.createElement('div');
+           messageElement.innerHTML=`
+         <div class="alert alert-secondary" role="alert">
+      <strong>${data.username}:</strong>${data.message}
+
+            <span class="small text-muted d-block">${new Date().toLocaleString()}
+              </span>
+     </div>
+     `;
+     chat.appendChild(messageElement);
+      chat.scrollTop=chat.scrollHeight;
+
+
+
+  });
+
+  const imageInput=document.getElementById('imageInput');
+  const sendImageButton=document.getElementById('sendImageButton');
+
+  sendImageButton.addEventListener('click',()=>{
+        const file=imageInput.files[0];
+        if(file){
+            const reader= new FileReader();
+            reader.onload= function(e){
+              const imageData=e.target.result;
+
+              socket.emit('send_image',{
+                 username:document.getElementById('username').value.trim(),
+                 caption:document.getElementById('captionInput').value.trim(),
+                 image:imageData
+
+
+              });
+            }
+            reader.readAsDataURL(file);
+        }
+
+  });
+
+  socket.on('receive_image',function(data){
+  let imageMessageElement=document.createElement('div');
+
+  imageMessageElement.innerHTML=`
+
+    <div class="alert alert-secondary" role="alert">
+
+    <strong>${data.username}:${data.caption}</strong>
+
+    <br>
+    <img src="${data.image}" alt="shared image" style="max-width:15%;height:auto;">
+    <span class="small text-muted d-block">${new Date().toLocaleString()}</span>
+    </div>
+  `;
+
+  chat.appendChild(imageMessageElement);
+  chat.scrollTop=chat.scrollHeight;
+
+  });
+</script>
+
+{%endblock%}
